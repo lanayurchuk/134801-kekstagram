@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм» [![Build status][travis-image]][travis-url] [![Dependency status][dependency-image]][dependency-url]
 
 * Студент: [Лана Юрчук](https://up.htmlacademy.ru/javascript/7/user/134801).
-* Наставник: `Неизвестно`.
+* Наставник: `Антон Калин`.
 
 ---
 
