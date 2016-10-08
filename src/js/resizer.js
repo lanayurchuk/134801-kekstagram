@@ -137,8 +137,8 @@
       // Размеры кадрируемого изображения
       this._ctx.fillStyle = '#fff';
       this._ctx.font = '16px Calibri';
-      this._ctx.textAlign = "center";
-      this._ctx.textBaseline = "bottom";
+      this._ctx.textAlign = 'center';
+      this._ctx.textBaseline = 'bottom';
       this._ctx.fillText(this._image.naturalWidth + ' х ' + this._image.naturalHeight, 0, -innerSide - strokeWidth - 4);
 
       // Отрисовка прямоугольника, обозначающего область изображения после
@@ -148,7 +148,6 @@
           (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
           this._resizeConstraint.side - this._ctx.lineWidth / 2,
           this._resizeConstraint.side - this._ctx.lineWidth / 2);
-
 
       // Восстановление состояния канваса, которое было до вызова ctx.save
       // и последующего изменения системы координат. Нужно для того, чтобы
