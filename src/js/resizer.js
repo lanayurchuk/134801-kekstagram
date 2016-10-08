@@ -111,6 +111,36 @@
       // Координаты задаются от центра холста.
       this._ctx.drawImage(this._image, displX, displY);
 
+      // Чёрный слой с прозрачностью 80%
+      // вокруг жёлтой рамки, рисующей ограничение
+      var innerSide = this._resizeConstraint.side / 2;
+      var strokeWidth = this._ctx.lineWidth;
+
+      this._ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+
+      this._ctx.beginPath();
+      this._ctx.moveTo(displX, displY);
+      this._ctx.lineTo(displX + this._container.width, displY);
+      this._ctx.lineTo(displX + this._container.width, displY + this._container.height);
+      this._ctx.lineTo(displX, displY + this._container.height);
+      this._ctx.lineTo(displX, displY);
+
+      this._ctx.lineTo(-innerSide - strokeWidth, -innerSide - strokeWidth);
+      this._ctx.lineTo(innerSide - strokeWidth / 2, -innerSide - strokeWidth);
+      this._ctx.lineTo(innerSide - strokeWidth / 2, innerSide - strokeWidth / 2);
+      this._ctx.lineTo(-innerSide - strokeWidth, innerSide - strokeWidth / 2);
+      this._ctx.lineTo(-innerSide - strokeWidth, -innerSide - strokeWidth);
+
+      this._ctx.fill('evenodd');
+      this._ctx.closePath();
+
+      // Размеры кадрируемого изображения
+      this._ctx.fillStyle = '#fff';
+      this._ctx.font = '16px Calibri';
+      this._ctx.textAlign = "center";
+      this._ctx.textBaseline = "bottom";
+      this._ctx.fillText(this._image.naturalWidth + ' х ' + this._image.naturalHeight, 0, -innerSide - strokeWidth - 4);
+
       // Отрисовка прямоугольника, обозначающего область изображения после
       // кадрирования. Координаты задаются от центра.
       this._ctx.strokeRect(
@@ -118,6 +148,7 @@
           (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
           this._resizeConstraint.side - this._ctx.lineWidth / 2,
           this._resizeConstraint.side - this._ctx.lineWidth / 2);
+
 
       // Восстановление состояния канваса, которое было до вызова ctx.save
       // и последующего изменения системы координат. Нужно для того, чтобы
