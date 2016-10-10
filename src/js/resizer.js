@@ -150,22 +150,24 @@
       var endPoint = this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2 - dotRadius;
       var dotStep = 12;
 
+      var ctx = this._ctx;
+
+      function dotBorder(x, y) {
+        ctx.beginPath();
+        ctx.fillStyle = '#ffe753';
+        ctx.arc(x, y, dotRadius, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.closePath();
+      }
+
       for (i = startPoint; i <= endPoint; i += dotStep) {
-        this._ctx.beginPath();
-        this._ctx.fillStyle = '#ffe753';
-        this._ctx.arc(i, startPoint, dotRadius, 0, 2 * Math.PI);
-        this._ctx.arc(startPoint, i, dotRadius, 0, 2 * Math.PI);
-        this._ctx.fill();
-        this._ctx.closePath();
+        dotBorder(i, startPoint);
+        dotBorder(startPoint, i);
       }
 
       for (i = endPoint; i >= startPoint + dotRadius; i -= dotStep) {
-        this._ctx.beginPath();
-        this._ctx.fillStyle = '#ffe753';
-        this._ctx.arc(i, endPoint, dotRadius, 0, 2 * Math.PI);
-        this._ctx.arc(endPoint, i, dotRadius, 0, 2 * Math.PI);
-        this._ctx.fill();
-        this._ctx.closePath();
+        dotBorder(i, endPoint);
+        dotBorder(endPoint, i);
       }
 
       // Восстановление состояния канваса, которое было до вызова ctx.save
