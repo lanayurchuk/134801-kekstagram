@@ -141,15 +141,12 @@
       this._ctx.textBaseline = 'bottom';
       this._ctx.fillText(this._image.naturalWidth + ' х ' + this._image.naturalHeight, 0, -innerSide - strokeWidth - 4);
 
-      // this._ctx.stroke();
-
       // Рамка жёлтыми точками
       var i;
       var dotRadius = 3;
       var startPoint = -this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2;
       var endPoint = this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2 - dotRadius;
       var dotStep = 12;
-
       var ctx = this._ctx;
 
       function dotBorder(x, y) {
