@@ -144,32 +144,28 @@
       // this._ctx.stroke();
 
       // Рамка жёлтыми точками
-      var i, j;
+      var i;
+      var dotRadius = 3;
       var startPoint = -this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2;
-      var endPoint = this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2;
+      var endPoint = this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2 - dotRadius;
+      var dotStep = 12;
 
-      for (i = startPoint; i <= endPoint - 3; i += 12) {
-        for (j = startPoint; j <= endPoint - 3; j += 12) {
-          if (i === startPoint || j === startPoint) {
-            this._ctx.beginPath();
-            this._ctx.fillStyle = '#ffe753';
-            this._ctx.arc(i, j, 3, 0, 2 * Math.PI);
-            this._ctx.fill();
-            this._ctx.closePath();
-          } else if (i >= endPoint - 12) {
-            this._ctx.beginPath();
-            this._ctx.fillStyle = '#ffe753';
-            this._ctx.arc(endPoint - 4, j, 3, 0, 2 * Math.PI);
-            this._ctx.fill();
-            this._ctx.closePath();
-          } else if (j >= endPoint - 12) {
-            this._ctx.beginPath();
-            this._ctx.fillStyle = '#ffe753';
-            this._ctx.arc(i, endPoint - 4, 3, 0, 2 * Math.PI);
-            this._ctx.fill();
-            this._ctx.closePath();
-          }
-        }
+      for (i = startPoint; i <= endPoint; i += dotStep) {
+        this._ctx.beginPath();
+        this._ctx.fillStyle = '#ffe753';
+        this._ctx.arc(i, startPoint, dotRadius, 0, 2 * Math.PI);
+        this._ctx.arc(startPoint, i, dotRadius, 0, 2 * Math.PI);
+        this._ctx.fill();
+        this._ctx.closePath();
+      }
+
+      for (i = endPoint; i >= startPoint + dotRadius; i -= dotStep) {
+        this._ctx.beginPath();
+        this._ctx.fillStyle = '#ffe753';
+        this._ctx.arc(i, endPoint, dotRadius, 0, 2 * Math.PI);
+        this._ctx.arc(endPoint, i, dotRadius, 0, 2 * Math.PI);
+        this._ctx.fill();
+        this._ctx.closePath();
       }
 
       // Восстановление состояния канваса, которое было до вызова ctx.save
