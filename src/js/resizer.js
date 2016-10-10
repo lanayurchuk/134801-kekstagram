@@ -141,13 +141,31 @@
       this._ctx.textBaseline = 'bottom';
       this._ctx.fillText(this._image.naturalWidth + ' х ' + this._image.naturalHeight, 0, -innerSide - strokeWidth - 4);
 
-      // Отрисовка прямоугольника, обозначающего область изображения после
-      // кадрирования. Координаты задаются от центра.
-      this._ctx.strokeRect(
-          (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
-          (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
-          this._resizeConstraint.side - this._ctx.lineWidth / 2,
-          this._resizeConstraint.side - this._ctx.lineWidth / 2);
+      // Рамка жёлтыми точками
+      var i;
+      var dotRadius = 3;
+      var startPoint = -this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2;
+      var endPoint = this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2 - dotRadius;
+      var dotStep = 12;
+      var ctx = this._ctx;
+
+      function dotBorder(x, y) {
+        ctx.beginPath();
+        ctx.fillStyle = '#ffe753';
+        ctx.arc(x, y, dotRadius, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.closePath();
+      }
+
+      for (i = startPoint; i <= endPoint; i += dotStep) {
+        dotBorder(i, startPoint);
+        dotBorder(startPoint, i);
+      }
+
+      for (i = endPoint; i >= startPoint + dotRadius; i -= dotStep) {
+        dotBorder(i, endPoint);
+        dotBorder(endPoint, i);
+      }
 
       // Восстановление состояния канваса, которое было до вызова ctx.save
       // и последующего изменения системы координат. Нужно для того, чтобы
