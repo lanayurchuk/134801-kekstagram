@@ -67,15 +67,49 @@
     backgroundElement.style.backgroundImage = 'url(' + images[randomImageNumber] + ')';
   };
 
-  /**
+  //Валидация формы
+  var resizeX = document.querySelector('#resize-x');
+  var resizeY = document.querySelector('#resize-y');
+  var resizeSize = document.querySelector('#resize-size');
+  var resizeFwd = document.querySelector('#resize-fwd');
+
+  resizeFwd.disabled = 'true';
+
+  resizeX.addEventListener('input', resizeFormIsValid);
+  resizeY.addEventListener('input', resizeFormIsValid);
+  resizeSize.addEventListener('input', resizeFormIsValid);
+
+    /**
    * Проверяет, валидны ли данные, в форме кадрирования.
    * @return {boolean}
    */
-  var resizeFormIsValid = function() {
+  function resizeFormIsValid() {
+    var left = parseInt(resizeX.value);
+    var top = parseInt(resizeY.value);
+    var size = parseInt(resizeSize.value);
+    var resizeSumX = left + size;
+    var resizeSumY = top + size;
+
+    resizeX.min = 0;
+    resizeY.min = 0;
+    resizeSize.min = 0;
+
+    //проверка на пустые поля ввода значений
+    if (!resizeX.value || !resizeY.value || !resizeSize.value) {
+      resizeFwd.disabled = 'true';
+      return false;
+    }
+
+    if (resizeSumX > currentResizer._image.naturalWidth || resizeSumY > currentResizer._image.naturalHeight) {
+        resizeFwd.disabled = 'true';
+        return false;
+    }
+
+    resizeFwd.removeAttribute('disabled');
     return true;
   };
 
-  /**
+   /**
    * Форма загрузки изображения.
    * @type {HTMLFormElement}
    */
@@ -194,6 +228,7 @@
     evt.preventDefault();
 
     if (resizeFormIsValid()) {
+
       var image = currentResizer.exportImage().src;
 
       var thumbnails = filterForm.querySelectorAll('.upload-filter-preview');
