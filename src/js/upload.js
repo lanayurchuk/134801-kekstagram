@@ -84,9 +84,9 @@
    * @return {boolean}
    */
   function resizeFormIsValid() {
-    var left = parseInt(resizeX.value);
-    var top = parseInt(resizeY.value);
-    var size = parseInt(resizeSize.value);
+    var left = parseInt(resizeX.value, 10);
+    var top = parseInt(resizeY.value, 10);
+    var size = parseInt(resizeSize.value, 10);
     var resizeSumX = left + size;
     var resizeSumY = top + size;
 
@@ -101,13 +101,13 @@
     }
 
     if (resizeSumX > currentResizer._image.naturalWidth || resizeSumY > currentResizer._image.naturalHeight) {
-        resizeFwd.disabled = 'true';
-        return false;
+      resizeFwd.disabled = 'true';
+      return false;
     }
 
     resizeFwd.removeAttribute('disabled');
     return true;
-  };
+  }
 
    /**
    * Форма загрузки изображения.
