@@ -75,38 +75,41 @@
 
   resizeFwd.disabled = 'true';
 
-  resizeX.addEventListener('input', resizeFormIsValid);
-  resizeY.addEventListener('input', resizeFormIsValid);
-  resizeSize.addEventListener('input', resizeFormIsValid);
+  resizeX.addEventListener('input', checkInputValues);
+  resizeY.addEventListener('input', checkInputValues);
+  resizeSize.addEventListener('input', checkInputValues);
 
-    /**
-   * Проверяет, валидны ли данные, в форме кадрирования.
-   * @return {boolean}
-   */
-  function resizeFormIsValid() {
+  //валидация введеных данных
+  function checkInputValues() {
     var left = parseInt(resizeX.value, 10);
     var top = parseInt(resizeY.value, 10);
     var size = parseInt(resizeSize.value, 10);
-    var resizeSumX = left + size;
-    var resizeSumY = top + size;
+    var wrongValues = isNaN(left) || isNaN(top) || isNaN(size);
+    var resizeWidth = (left + size) <= currentResizer._image.naturalWidth;
+    var resizeHeight = (top + size) <= currentResizer._image.naturalHeight;
 
     resizeX.min = 0;
     resizeY.min = 0;
     resizeSize.min = 0;
 
-    //проверка на пустые поля ввода значений
-    if (!(resizeX.value && resizeY.value && resizeSize.value)) {
-      resizeFwd.disabled = 'true';
-      return false;
-    }
-
-    if (resizeSumX > currentResizer._image.naturalWidth || resizeSumY > currentResizer._image.naturalHeight) {
+    if (wrongValues || !resizeWidth || !resizeHeight) {
       resizeFwd.disabled = 'true';
       return false;
     }
 
     resizeFwd.removeAttribute('disabled');
     return true;
+  }
+
+    /**
+   * Проверяет, валидны ли данные, в форме кадрирования.
+   * @return {boolean}
+   */
+  function resizeFormIsValid() {
+    if (checkInputValues()) {
+      return true;
+    }
+    return false;
   }
 
    /**
