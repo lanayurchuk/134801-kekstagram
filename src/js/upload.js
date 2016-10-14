@@ -95,7 +95,7 @@
     resizeSize.min = 0;
 
     //проверка на пустые поля ввода значений
-    if (!resizeX.value || !resizeY.value || !resizeSize.value) {
+    if (!(resizeX.value && resizeY.value && resizeSize.value)) {
       resizeFwd.disabled = 'true';
       return false;
     }
