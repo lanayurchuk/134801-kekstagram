@@ -73,7 +73,7 @@
   var resizeSize = document.querySelector('#resize-size');
   var resizeFwd = document.querySelector('#resize-fwd');
 
-  resizeFwd.disabled = 'true';
+  resizeFwd.disabled = true;
 
   resizeX.addEventListener('input', checkInputValues);
   resizeY.addEventListener('input', checkInputValues);
@@ -93,11 +93,11 @@
     resizeSize.min = 0;
 
     if (wrongValues || !resizeWidth || !resizeHeight) {
-      resizeFwd.disabled = 'true';
+      resizeFwd.disabled = true;
       return false;
     }
 
-    resizeFwd.removeAttribute('disabled');
+    resizeFwd.disabled = false;
     return true;
   }
 
@@ -106,10 +106,7 @@
    * @return {boolean}
    */
   function resizeFormIsValid() {
-    if (checkInputValues()) {
-      return true;
-    }
-    return false;
+    return checkInputValues();
   }
 
    /**
