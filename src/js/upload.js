@@ -67,15 +67,49 @@
     backgroundElement.style.backgroundImage = 'url(' + images[randomImageNumber] + ')';
   };
 
-  /**
+  //Валидация формы
+  var resizeX = document.querySelector('#resize-x');
+  var resizeY = document.querySelector('#resize-y');
+  var resizeSize = document.querySelector('#resize-size');
+  var resizeFwd = document.querySelector('#resize-fwd');
+
+  resizeFwd.disabled = true;
+
+  resizeX.addEventListener('input', checkInputValues);
+  resizeY.addEventListener('input', checkInputValues);
+  resizeSize.addEventListener('input', checkInputValues);
+
+  //валидация введеных данных
+  function checkInputValues() {
+    var left = parseInt(resizeX.value, 10);
+    var top = parseInt(resizeY.value, 10);
+    var size = parseInt(resizeSize.value, 10);
+    var wrongValues = isNaN(left) || isNaN(top) || isNaN(size);
+    var resizeWidth = (left + size) <= currentResizer._image.naturalWidth;
+    var resizeHeight = (top + size) <= currentResizer._image.naturalHeight;
+
+    resizeX.min = 0;
+    resizeY.min = 0;
+    resizeSize.min = 0;
+
+    if (wrongValues || !resizeWidth || !resizeHeight) {
+      resizeFwd.disabled = true;
+      return false;
+    }
+
+    resizeFwd.disabled = false;
+    return true;
+  }
+
+    /**
    * Проверяет, валидны ли данные, в форме кадрирования.
    * @return {boolean}
    */
-  var resizeFormIsValid = function() {
-    return true;
-  };
+  function resizeFormIsValid() {
+    return checkInputValues();
+  }
 
-  /**
+   /**
    * Форма загрузки изображения.
    * @type {HTMLFormElement}
    */
@@ -194,6 +228,7 @@
     evt.preventDefault();
 
     if (resizeFormIsValid()) {
+
       var image = currentResizer.exportImage().src;
 
       var thumbnails = filterForm.querySelectorAll('.upload-filter-preview');
