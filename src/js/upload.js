@@ -257,6 +257,8 @@
     resizeForm.classList.remove('invisible');
   }
 
+  var cookies = window.Cookies;
+
   /**
    * Отправка формы фильтра. Возвращает в начальное состояние, предварительно
    * записав сохраненный фильтр в cookie.
@@ -279,11 +281,11 @@
     var filters = filterForm.elements['upload-filter'];
     var selectedFilter = filters.value;
 
-    Cookies.set('upload-filter', selectedFilter, { expires: getDaysAfterHopper() });
+    cookies.set('upload-filter', selectedFilter, { expires: getDaysAfterHopper() });
   }
 
   function useFilterCookie() {
-    var selectedFilter = Cookies.get('upload-filter');
+    var selectedFilter = cookies.get('upload-filter');
 
     if (selectedFilter) {
       document.querySelector('.filter-image-preview').className += ' filter-' + selectedFilter;
@@ -298,10 +300,10 @@
     var birthHopper = new Date(todayYear, 11, 9);
 
     if (today < birthHopper) {
-      birthHopper.setFullYear(todayYear-1);
+      birthHopper.setFullYear(todayYear - 1);
     }
 
-    var cookieTime = Math.floor((today - birthHopper) / (24 * 60 * 60 *1000));
+    var cookieTime = Math.floor((today - birthHopper) / (24 * 60 * 60 * 1000));
     return cookieTime;
   }
 
