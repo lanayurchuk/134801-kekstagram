@@ -295,7 +295,7 @@
   function getDaysAfterHopper() {
     var today = new Date();
     var todayYear = today.getFullYear();
-    var birthHopper = new Date(todayYear, 11, 09);
+    var birthHopper = new Date(todayYear, 11, 9);
 
     if (today < birthHopper) {
       birthHopper.setFullYear(todayYear-1);
