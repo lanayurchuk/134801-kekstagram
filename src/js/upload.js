@@ -239,6 +239,7 @@
       filterImage.src = image;
 
       resizeForm.classList.add('invisible');
+      useFilterCookie();
       filterForm.classList.remove('invisible');
     }
   };
@@ -247,33 +248,70 @@
    * Сброс формы фильтра. Показывает форму кадрирования.
    * @param {Event} evt
    */
-  filterForm.onreset = function(evt) {
+  filterForm.addEventListener('reset', resetFilterForm);
+
+  function resetFilterForm(evt) {
     evt.preventDefault();
 
     filterForm.classList.add('invisible');
     resizeForm.classList.remove('invisible');
-  };
+  }
 
   /**
    * Отправка формы фильтра. Возвращает в начальное состояние, предварительно
    * записав сохраненный фильтр в cookie.
    * @param {Event} evt
    */
-  filterForm.onsubmit = function(evt) {
+  filterForm.addEventListener('submit', submitFilterForm);
+
+  function submitFilterForm(evt) {
     evt.preventDefault();
 
     cleanupResizer();
     updateBackground();
+    writeFilterCookie();
 
     filterForm.classList.add('invisible');
     uploadForm.classList.remove('invisible');
-  };
+  }
+
+  function writeFilterCookie() {
+    var filters = filterForm.elements['upload-filter'];
+    var selectedFilter = filters.value;
+
+    Cookies.set('upload-filter', selectedFilter, { expires: getDaysAfterHopper() });
+  }
+
+  function useFilterCookie() {
+    var selectedFilter = Cookies.get('upload-filter');
+
+    if (selectedFilter) {
+      document.querySelector('.filter-image-preview').className += ' filter-' + selectedFilter;
+      document.querySelector('#upload-filter-' + selectedFilter).checked = true;
+    }
+  }
+
+  // Количество дней, прошедших с последнего прошедшего дня рождения Грейс Хоппер
+  function getDaysAfterHopper() {
+    var today = new Date();
+    var todayYear = today.getFullYear();
+    var birthHopper = new Date(todayYear, 11, 09);
+
+    if (today < birthHopper) {
+      birthHopper.setFullYear(todayYear-1);
+    }
+
+    var cookieTime = Math.floor((today - birthHopper) / (24 * 60 * 60 *1000));
+    return cookieTime;
+  }
 
   /**
    * Обработчик изменения фильтра. Добавляет класс из filterMap соответствующий
    * выбранному значению в форме.
    */
-  filterForm.onchange = function() {
+  filterForm.addEventListener('change', changeFilterForm);
+
+  function changeFilterForm() {
     if (!filterMap) {
       // Ленивая инициализация. Объект не создается до тех пор, пока
       // не понадобится прочитать его в первый раз, а после этого запоминается
@@ -294,7 +332,7 @@
     // убрать предыдущий примененный класс. Для этого нужно или запоминать его
     // состояние или просто перезаписывать.
     filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter];
-  };
+  }
 
   cleanupResizer();
   updateBackground();
