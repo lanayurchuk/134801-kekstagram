@@ -257,8 +257,6 @@
     resizeForm.classList.remove('invisible');
   }
 
-  var cookies = window.Cookies;
-
   /**
    * Отправка формы фильтра. Возвращает в начальное состояние, предварительно
    * записав сохраненный фильтр в cookie.
@@ -276,6 +274,8 @@
     filterForm.classList.add('invisible');
     uploadForm.classList.remove('invisible');
   }
+
+  var cookies = window.Cookies;
 
   function writeFilterCookie() {
     var filters = filterForm.elements['upload-filter'];
