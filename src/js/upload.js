@@ -239,17 +239,19 @@
       filterImage.src = image;
 
       resizeForm.classList.add('invisible');
-      useFilterCookie();
+      applyStoredFilter();
       filterForm.classList.remove('invisible');
     }
   };
+
+  filterForm.addEventListener('reset', resetFilterForm);
+  filterForm.addEventListener('submit', submitFilterForm);
+  filterForm.addEventListener('change', changeFilterForm);
 
   /**
    * Сброс формы фильтра. Показывает форму кадрирования.
    * @param {Event} evt
    */
-  filterForm.addEventListener('reset', resetFilterForm);
-
   function resetFilterForm(evt) {
     evt.preventDefault();
 
@@ -262,14 +264,12 @@
    * записав сохраненный фильтр в cookie.
    * @param {Event} evt
    */
-  filterForm.addEventListener('submit', submitFilterForm);
-
   function submitFilterForm(evt) {
     evt.preventDefault();
 
     cleanupResizer();
     updateBackground();
-    writeFilterCookie();
+    setFilterCookie();
 
     filterForm.classList.add('invisible');
     uploadForm.classList.remove('invisible');
@@ -277,20 +277,25 @@
 
   var cookies = window.Cookies;
 
-  function writeFilterCookie() {
+  function setFilterCookie() {
     var filters = filterForm.elements['upload-filter'];
     var selectedFilter = filters.value;
 
     cookies.set('upload-filter', selectedFilter, { expires: getDaysAfterHopper() });
   }
 
-  function useFilterCookie() {
+  function applyStoredFilter() {
     var selectedFilter = cookies.get('upload-filter');
 
-    if (selectedFilter) {
-      document.querySelector('.filter-image-preview').className += ' filter-' + selectedFilter;
-      document.querySelector('#upload-filter-' + selectedFilter).checked = true;
+    if (!selectedFilter) {
+      return;
     }
+
+    var imagePreview = document.querySelector('.filter-image-preview');
+    var filter = document.querySelector('#upload-filter-' + selectedFilter);
+
+    imagePreview.classList.add('filter-' + selectedFilter);
+    filter.checked = true;
   }
 
   // Количество дней, прошедших с последнего прошедшего дня рождения Грейс Хоппер
@@ -298,12 +303,13 @@
     var today = new Date();
     var todayYear = today.getFullYear();
     var birthHopper = new Date(todayYear, 11, 9);
+    var msPerDay = 24 * 60 * 60 * 1000;
 
     if (today < birthHopper) {
       birthHopper.setFullYear(todayYear - 1);
     }
 
-    var cookieTime = Math.floor((today - birthHopper) / (24 * 60 * 60 * 1000));
+    var cookieTime = Math.floor((today - birthHopper) / msPerDay);
     return cookieTime;
   }
 
@@ -311,8 +317,6 @@
    * Обработчик изменения фильтра. Добавляет класс из filterMap соответствующий
    * выбранному значению в форме.
    */
-  filterForm.addEventListener('change', changeFilterForm);
-
   function changeFilterForm() {
     if (!filterMap) {
       // Ленивая инициализация. Объект не создается до тех пор, пока
