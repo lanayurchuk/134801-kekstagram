@@ -275,9 +275,8 @@
     uploadForm.classList.remove('invisible');
   }
 
-  var cookies = window.Cookies;
-
   function setFilterCookie() {
+    var cookies = window.Cookies;
     var filters = filterForm.elements['upload-filter'];
     var selectedFilter = filters.value;
 
@@ -285,6 +284,7 @@
   }
 
   function applyStoredFilter() {
+    var cookies = window.Cookies;
     var selectedFilter = cookies.get('upload-filter');
 
     if (!selectedFilter) {
