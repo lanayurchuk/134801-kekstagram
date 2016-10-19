@@ -239,41 +239,85 @@
       filterImage.src = image;
 
       resizeForm.classList.add('invisible');
+      applyStoredFilter();
       filterForm.classList.remove('invisible');
     }
   };
+
+  filterForm.addEventListener('reset', resetFilterForm);
+  filterForm.addEventListener('submit', submitFilterForm);
+  filterForm.addEventListener('change', changeFilterForm);
 
   /**
    * Сброс формы фильтра. Показывает форму кадрирования.
    * @param {Event} evt
    */
-  filterForm.onreset = function(evt) {
+  function resetFilterForm(evt) {
     evt.preventDefault();
 
     filterForm.classList.add('invisible');
     resizeForm.classList.remove('invisible');
-  };
+  }
 
   /**
    * Отправка формы фильтра. Возвращает в начальное состояние, предварительно
    * записав сохраненный фильтр в cookie.
    * @param {Event} evt
    */
-  filterForm.onsubmit = function(evt) {
+  function submitFilterForm(evt) {
     evt.preventDefault();
 
     cleanupResizer();
     updateBackground();
+    setFilterCookie();
 
     filterForm.classList.add('invisible');
     uploadForm.classList.remove('invisible');
-  };
+  }
+
+  function setFilterCookie() {
+    var cookies = window.Cookies;
+    var filters = filterForm.elements['upload-filter'];
+    var selectedFilter = filters.value;
+
+    cookies.set('upload-filter', selectedFilter, { expires: getDaysAfterHopper() });
+  }
+
+  function applyStoredFilter() {
+    var cookies = window.Cookies;
+    var selectedFilter = cookies.get('upload-filter');
+
+    if (!selectedFilter) {
+      return;
+    }
+
+    var imagePreview = document.querySelector('.filter-image-preview');
+    var filter = document.querySelector('#upload-filter-' + selectedFilter);
+
+    imagePreview.classList.add('filter-' + selectedFilter);
+    filter.checked = true;
+  }
+
+  // Количество дней, прошедших с последнего прошедшего дня рождения Грейс Хоппер
+  function getDaysAfterHopper() {
+    var today = new Date();
+    var todayYear = today.getFullYear();
+    var birthHopper = new Date(todayYear, 11, 9);
+    var msPerDay = 24 * 60 * 60 * 1000;
+
+    if (today < birthHopper) {
+      birthHopper.setFullYear(todayYear - 1);
+    }
+
+    var cookieTime = Math.floor((today - birthHopper) / msPerDay);
+    return cookieTime;
+  }
 
   /**
    * Обработчик изменения фильтра. Добавляет класс из filterMap соответствующий
    * выбранному значению в форме.
    */
-  filterForm.onchange = function() {
+  function changeFilterForm() {
     if (!filterMap) {
       // Ленивая инициализация. Объект не создается до тех пор, пока
       // не понадобится прочитать его в первый раз, а после этого запоминается
@@ -294,7 +338,7 @@
     // убрать предыдущий примененный класс. Для этого нужно или запоминать его
     // состояние или просто перезаписывать.
     filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter];
-  };
+  }
 
   cleanupResizer();
   updateBackground();
