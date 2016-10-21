@@ -6,6 +6,9 @@
   var template = document.querySelector('#picture-template');
   var templateContainer = 'content' in template ? template.content : template;
 
+  // разметка для вывода изображения
+  var templateElement = templateContainer.querySelector('.picture');
+
   // ширина и высота загруженной фотографии
   var WIDTH = 182;
   var HEIGHT = 182;
@@ -123,15 +126,15 @@
   filters.classList.remove('hidden');
 
   function getPictureElement(picture) {
-    var pictureElement = templateContainer.querySelector('.picture').cloneNode(true);
-    var photoBlock = pictureElement.querySelector('img');
+    var pictureElement = templateElement.cloneNode(true);
+    var photoElement = pictureElement.querySelector('img');
 
     var photo = new Image();
 
     photo.onload = function() {
-      photoBlock.src = photo.src;
-      photoBlock.width = WIDTH;
-      photoBlock.height = HEIGHT;
+      photoElement.src = photo.src;
+      photoElement.width = WIDTH;
+      photoElement.height = HEIGHT;
     };
 
     photo.onerror = function() {
@@ -145,7 +148,8 @@
 
   function renderPictures() {
     pictures.forEach(function(picture) {
-      container.appendChild(getPictureElement(picture));
+      var newElement = getPictureElement(picture);
+      container.appendChild(newElement);
     });
   }
 })();
