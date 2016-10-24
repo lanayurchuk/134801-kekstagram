@@ -13,24 +13,13 @@
   var WIDTH = 182;
   var HEIGHT = 182;
 
-  var PICTURES_LOAD_URL = 'http://localhost:1507/api/pictures';
-
-  var load = function(url, callback, callbackName) {
-    if (!callbackName) {
-      callbackName = 'cb' + Date.now();
-    }
-
-    window[callbackName] = function(data) {
-      callback(data);
-    }
-
-    var script = document.createElement('script');
-    script.src = url + '?callback=' + callbackName;
-    document.body.appendChild(script);
-  };
-
   filters.classList.add('hidden');
-  load(PICTURES_LOAD_URL, renderPictures, 'JSONPCallback');
+
+  var callbackNamePictures = 'CallbackPictures';
+  var picturesLoadUrl = 'http://localhost:1507/api/pictures?callback=' + callbackNamePictures;
+
+  loadPictures(picturesLoadUrl, renderPictures);
+
   filters.classList.remove('hidden');
 
   function getPictureElement(picture) {
@@ -59,5 +48,15 @@
       var newElement = getPictureElement(picture);
       container.appendChild(newElement);
     });
+  }
+
+  function loadPictures(url, callback) {
+    window[callbackNamePictures] = function(data) {
+      callback(data);
+    }
+
+    var script = document.createElement('script');
+    script.src = url;
+    document.body.appendChild(script);
   }
 })();
