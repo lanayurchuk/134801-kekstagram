@@ -12,15 +12,19 @@
   // ширина и высота загруженной фотографии
   var WIDTH = 182;
   var HEIGHT = 182;
-
-  filters.classList.add('hidden');
-
   var callbackNamePictures = 'CallbackPictures';
   var picturesLoadUrl = 'http://localhost:1507/api/pictures?callback=' + callbackNamePictures;
 
-  loadPictures(picturesLoadUrl, renderPictures);
+  hide(filters);
+  createCallback(picturesLoadUrl, loadPictures);
 
-  filters.classList.remove('hidden');
+  function show(element) {
+    element.classList.remove('hidden');
+  }
+
+  function hide(element) {
+    element.classList.add('hidden');
+  }
 
   function getPictureElement(picture) {
     var pictureElement = templateElement.cloneNode(true);
@@ -50,7 +54,7 @@
     });
   }
 
-  function loadPictures(url, callback) {
+  function createCallback(url, callback) {
     window[callbackNamePictures] = function(data) {
       callback(data);
     }
@@ -58,5 +62,10 @@
     var script = document.createElement('script');
     script.src = url;
     document.body.appendChild(script);
+  }
+
+  function loadPictures(data) {
+    renderPictures(data);
+    show(filters);
   }
 })();
