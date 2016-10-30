@@ -17,7 +17,7 @@ function show(element) {
 
 function hide(element) {
   element.classList.add('hidden');
- }
+}
 
 function renderPictures(pictures) {
   pictures.forEach(function(picture) {
