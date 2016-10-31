@@ -1,6 +1,8 @@
 'use strict';
 
-function getPictureElement(picture) {
+function getPictureElement(picture, index) {
+  var gallery = require('./gallery');
+
   var template = document.querySelector('#picture-template');
   var templateContainer = 'content' in template ? template.content : template;
 
@@ -24,6 +26,11 @@ function getPictureElement(picture) {
 
   photo.onerror = function() {
     pictureElement.classList.add('picture-load-failure');
+  };
+
+  pictureElement.onclick = function(evt) {
+    gallery.show(index);
+    evt.preventDefault();
   };
 
   photo.src = picture.url;
