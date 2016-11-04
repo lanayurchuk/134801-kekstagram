@@ -3,9 +3,9 @@
 function Gallery() {
   this.pictures = [];
   this.activePicture = 0;
-  this.galleryContainer = document.querySelector('.gallery-overlay');
-  this.closeElement = this.galleryContainer.querySelector('.gallery-overlay-close');
-  this.galleryImage = this.galleryContainer.querySelector('.gallery-overlay-image');
+  this.containerEl = document.querySelector('.gallery-overlay');
+  this.closeEl = this.containerEl.querySelector('.gallery-overlay-close');
+  this.imageEl = this.containerEl.querySelector('.gallery-overlay-image');
 }
 
 Gallery.prototype.setPictures = function(pictures) {
@@ -13,34 +13,38 @@ Gallery.prototype.setPictures = function(pictures) {
 };
 
 Gallery.prototype.show = function(number) {
-  this.closeElement.onclick = this.hide.bind(this);
-  this.galleryImage.onclick = this.showNextImage.bind(this);
-  this.galleryContainer.classList.remove('invisible');
+  this.hide = this.hide.bind(this);
+  this.showNextImage = this.showNextImage.bind(this);
+
+  this.closeEl.addEventListener('click', this.hide);
+  this.imageEl.addEventListener('click', this.showNextImage);
+
+  this.containerEl.classList.remove('invisible');
   this.setActivePicture(number);
 };
 
 Gallery.prototype.showNextImage = function() {
-  var index = (this.activePicture < this.pictures.length - 1) ? ++this.activePicture : 0;
+  var index = (this.activePicture < this.pictures.length - 1) ? (this.activePicture + 1) : 0;
   this.setActivePicture(index);
 };
 
 Gallery.prototype.hide = function() {
-  this.galleryContainer.classList.add('invisible');
-  this.closeElement.onclick = null;
-  this.galleryImage.onclick = null;
+  this.containerEl.classList.add('invisible');
+  this.closeEl.removeEventListener('click', this.hide);
+  this.imageEl.removeEventListener('click', this.showNextImage);
 };
 
 Gallery.prototype.setActivePicture = function(number) {
   this.activePicture = number;
 
-  this.galleryLikes = this.galleryContainer.querySelector('.likes-count');
-  this.galleryComments = this.galleryContainer.querySelector('.comments-count');
+  this.likeEl = this.containerEl.querySelector('.likes-count');
+  this.commentEl = this.containerEl.querySelector('.comments-count');
 
   var image = this.pictures[number];
 
-  this.galleryImage.src = image.url;
-  this.galleryLikes.textContent = image.likes;
-  this.galleryComments.textContent = image.comments;
+  this.imageEl.src = image.url;
+  this.likeEl.textContent = image.likes;
+  this.commentEl.textContent = image.comments;
 };
 
 module.exports = Gallery;
