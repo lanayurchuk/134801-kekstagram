@@ -26,15 +26,11 @@ function renderPictures(pictures) {
   pictures.forEach(function(picture, index) {
     var newElement = getPictureElement(picture, index);
     newElement.addEventListener('click', function(evt) {
-      addPictureEventClick(evt, index);
+      evt.preventDefault();
+      gallery.show(index);
     });
     container.appendChild(newElement);
   });
-}
-
-function addPictureEventClick(evt, index) {
-  evt.preventDefault();
-  gallery.show(index);
 }
 
 function loadPictures(data) {
