@@ -2,6 +2,9 @@
 
 var getPictureElement = require('./picture');
 var createCallback = require('./load');
+var Gallery = require('./gallery');
+
+var gallery = new Gallery();
 
 var filters = document.querySelector('.filters');
 var container = document.querySelector('.pictures');
@@ -20,13 +23,18 @@ function hide(element) {
 }
 
 function renderPictures(pictures) {
-  pictures.forEach(function(picture) {
-    var newElement = getPictureElement(picture);
+  pictures.forEach(function(picture, index) {
+    var newElement = getPictureElement(picture, index);
+    newElement.addEventListener('click', function(evt) {
+      evt.preventDefault();
+      gallery.show(index);
+    });
     container.appendChild(newElement);
   });
 }
 
 function loadPictures(data) {
   renderPictures(data);
+  gallery.setPictures(data);
   show(filters);
 }
