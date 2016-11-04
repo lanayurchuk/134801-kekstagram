@@ -6,6 +6,8 @@ function Gallery() {
   this.containerEl = document.querySelector('.gallery-overlay');
   this.closeEl = this.containerEl.querySelector('.gallery-overlay-close');
   this.imageEl = this.containerEl.querySelector('.gallery-overlay-image');
+  this.hide = this.hide.bind(this);
+  this.showNextImage = this.showNextImage.bind(this);
 }
 
 Gallery.prototype.setPictures = function(pictures) {
@@ -13,9 +15,6 @@ Gallery.prototype.setPictures = function(pictures) {
 };
 
 Gallery.prototype.show = function(number) {
-  this.hide = this.hide.bind(this);
-  this.showNextImage = this.showNextImage.bind(this);
-
   this.closeEl.addEventListener('click', this.hide);
   this.imageEl.addEventListener('click', this.showNextImage);
 
