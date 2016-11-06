@@ -1,7 +1,10 @@
 'use strict';
 
-var getPictureElement = require('./picture');
 var createCallback = require('./load');
+var Gallery = require('./gallery');
+var Picture = require('./picture');
+
+var gallery = new Gallery();
 
 var filters = document.querySelector('.filters');
 var container = document.querySelector('.pictures');
@@ -20,13 +23,14 @@ function hide(element) {
 }
 
 function renderPictures(pictures) {
-  pictures.forEach(function(picture) {
-    var newElement = getPictureElement(picture);
-    container.appendChild(newElement);
+  pictures.forEach(function(picture, index) {
+    var newElement = new Picture(picture, index, gallery);
+    container.appendChild(newElement.element);
   });
 }
 
 function loadPictures(data) {
   renderPictures(data);
+  gallery.setPictures(data);
   show(filters);
 }
