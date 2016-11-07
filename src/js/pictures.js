@@ -3,6 +3,7 @@
 var createCallback = require('./load');
 var Gallery = require('./gallery');
 var Picture = require('./picture');
+
 var gallery = new Gallery();
 
 var filters = document.querySelector('.filters');
@@ -23,12 +24,8 @@ function hide(element) {
 
 function renderPictures(pictures) {
   pictures.forEach(function(picture, index) {
-    var newElement = getPictureElement(picture, index);
-    newElement.addEventListener('click', function(evt) {
-      evt.preventDefault();
-      gallery.show(index);
-    });
-    container.appendChild(newElement);
+    var newElement = new Picture(picture, index, gallery);
+    container.appendChild(newElement.element);
   });
 }
 
