@@ -1,9 +1,8 @@
 'use strict';
 
-var getPictureElement = require('./picture');
 var createCallback = require('./load');
 var Gallery = require('./gallery');
-
+var Picture = require('./picture');
 var gallery = new Gallery();
 
 var filters = document.querySelector('.filters');
