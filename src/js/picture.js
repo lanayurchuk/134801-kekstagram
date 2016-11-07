@@ -31,4 +31,25 @@ function getPictureElement(picture) {
   return pictureElement;
 }
 
-module.exports = getPictureElement;
+function Picture(picture, index, galleryObj) {
+  this.data = picture;
+  this.gallery = galleryObj;
+  this.index = index;
+
+  this.element = getPictureElement(this.data);
+
+  this.showGallery = this.showGallery.bind(this);
+  this.element.addEventListener('click', this.showGallery);
+}
+
+Picture.prototype.showGallery = function(evt) {
+  evt.preventDefault();
+  this.gallery.show(this.index);
+  this.removeEvent();
+};
+
+Picture.prototype.removeEvent = function() {
+  this.element.removeEventListener('click', this.showGallery);
+};
+
+module.exports = Picture;
