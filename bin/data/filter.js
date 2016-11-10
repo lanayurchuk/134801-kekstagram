@@ -7,11 +7,19 @@ module.exports = function(list, filterName) {
         return b.likes - a.likes;
       });
       break;
+
     case 'filter-new':
-      list.sort(function(a, b) {
+      var lastThreeDays = Date.now() - (1000 * 60 * 60 * 24 * 3);
+
+      list.filter(function(a) {
+        return a.created >= lastThreeDays;
+      });
+
+      return list.sort(function(a, b) {
         return b.created - a.created;
       });
       break;
+
     case 'filter-discussed':
       list.sort(function(a, b) {
         return b.comments - a.comments;
