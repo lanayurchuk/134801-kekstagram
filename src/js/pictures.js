@@ -29,7 +29,6 @@ var params = {
 
 hide(filters);
 load(picturesLoadUrl, params, loadPictures);
-autoCompletePage();
 
 function show(element) {
   element.classList.remove('hidden');
@@ -52,6 +51,7 @@ function loadPictures(data) {
   renderPictures(data);
   gallery.setPictures(newData);
   show(filters);
+  autoCompletePage();
 }
 
 window.addEventListener('scroll', function() {
@@ -80,7 +80,6 @@ function changeFilter(filterName) {
   params.filter = activeFilter;
 
   load(picturesLoadUrl, params, loadPictures);
-  autoCompletePage();
 }
 
 function isFooterBottom() {
