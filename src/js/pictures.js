@@ -74,7 +74,7 @@ filters.addEventListener('click', function(evt) {
 });
 
 function changeFilter(filterName) {
-  removePictureEvent();
+  removeRenderedPictures();
 
   newData = [];
   currentPage = 0;
@@ -88,7 +88,7 @@ function changeFilter(filterName) {
   load(picturesLoadUrl, params, loadPictures);
 }
 
-function removePictureEvent() {
+function removeRenderedPictures() {
   renderedPictures.forEach(function(picture) {
     picture.removeEvent();
     container.removeChild(picture.element);
