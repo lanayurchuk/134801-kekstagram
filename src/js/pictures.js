@@ -76,7 +76,6 @@ filters.addEventListener('click', function(evt) {
 function changeFilter(filterName) {
   removePictureEvent();
 
-  container.innerHTML = '';
   newData = [];
   currentPage = 0;
   activeFilter = filterName;
