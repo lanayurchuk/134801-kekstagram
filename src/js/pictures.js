@@ -20,6 +20,8 @@ var GAP = 100;
 var lastCall = Date.now();
 // комбинированный массив со всеми подгружаемыми данными
 var newData = [];
+var renderedPictures = [];
+var pictureIndex = 0;
 
 var params = {
   from: currentPage * pageSize,
@@ -39,10 +41,12 @@ function hide(element) {
 }
 
 function renderPictures(pictures) {
+  var lastIndex = pageSize * currentPage;
   pictures.forEach(function(picture, index) {
-    var indexPic = index + (pageSize * currentPage);
-    var newElement = new Picture(picture, indexPic, gallery);
+    pictureIndex = index + lastIndex;
+    var newElement = new Picture(picture, pictureIndex, gallery);
     container.appendChild(newElement.element);
+    renderedPictures = renderedPictures.concat(newElement);
   });
 }
 
@@ -70,16 +74,27 @@ filters.addEventListener('click', function(evt) {
 });
 
 function changeFilter(filterName) {
+  removePictureEvent();
+
   container.innerHTML = '';
   newData = [];
   currentPage = 0;
   activeFilter = filterName;
-
-  params.from = currentPage;
-  params.to = pageSize;
-  params.filter = activeFilter;
+  params = {
+    from: currentPage,
+    to: pageSize,
+    filter: activeFilter
+  };
 
   load(picturesLoadUrl, params, loadPictures);
+}
+
+function removePictureEvent() {
+  renderedPictures.forEach(function(picture) {
+    picture.removeEvent();
+    container.removeChild(picture.element);
+  });
+  renderedPictures = [];
 }
 
 function isFooterBottom() {
@@ -89,8 +104,13 @@ function isFooterBottom() {
 }
 
 function showNextPage() {
-  params.from = ++currentPage * pageSize;
-  params.to = params.from + pageSize;
+  currentPage++;
+  params = {
+    from: currentPage * pageSize,
+    to: currentPage * pageSize + pageSize,
+    filter: activeFilter
+  };
+
   load(picturesLoadUrl, params, loadPictures);
 }
 
