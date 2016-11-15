@@ -74,8 +74,6 @@
   var resizeFwd = document.querySelector('#resize-fwd');
   var uploadResizeControls = document.querySelector('.upload-resize-controls');
 
-  resizeFwd.disabled = true;
-
   resizeX.addEventListener('input', checkInputValues);
   resizeY.addEventListener('input', checkInputValues);
   resizeSize.addEventListener('input', checkInputValues);
