@@ -30,9 +30,7 @@ var params = {
   filter: activeFilter
 };
 
-if(storedFilter) {
-  filters.querySelector('#' + storedFilter).checked = true;
-}
+filters.querySelector('#' + activeFilter).checked = true;
 
 hide(filters);
 load(picturesLoadUrl, params, loadPictures);
