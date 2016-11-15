@@ -180,9 +180,11 @@
   uploadResizeControls.addEventListener('input', setNewResizerData);
 
   function getCurrentResizerData() {
-    resizeX.value = Math.round(currentResizer.getConstraint().x);
-    resizeY.value = Math.round(currentResizer.getConstraint().y);
-    resizeSize.value = Math.round(currentResizer.getConstraint().side);
+    var constraints = currentResizer.getConstraint();
+
+    resizeX.value = Math.round(constraints.x);
+    resizeY.value = Math.round(constraints.y);
+    resizeSize.value = Math.round(constraints.side);
   }
 
   function setNewResizerData() {
