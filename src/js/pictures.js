@@ -12,7 +12,8 @@ var footer = document.querySelector('footer');
 
 var picturesLoadUrl = '/api/pictures';
 
-var activeFilter = 'filter-popular';
+var storedFilter = localStorage.getItem('filterPictures');
+var activeFilter = storedFilter ? storedFilter : 'filter-popular';
 var currentPage = 0;
 var pageSize = 12;
 var throttleTimeout = 100;
@@ -28,6 +29,10 @@ var params = {
   to: currentPage * pageSize + pageSize,
   filter: activeFilter
 };
+
+if(storedFilter) {
+  filters.querySelector('#' + storedFilter).checked = true;
+}
 
 hide(filters);
 load(picturesLoadUrl, params, loadPictures);
@@ -85,6 +90,7 @@ function changeFilter(filterName) {
     filter: activeFilter
   };
 
+  localStorage.setItem('filterPictures', params.filter);
   load(picturesLoadUrl, params, loadPictures);
 }
 
