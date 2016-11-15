@@ -72,8 +72,7 @@
   var resizeY = document.querySelector('#resize-y');
   var resizeSize = document.querySelector('#resize-size');
   var resizeFwd = document.querySelector('#resize-fwd');
-
-  resizeFwd.disabled = true;
+  var uploadResizeControls = document.querySelector('.upload-resize-controls');
 
   resizeX.addEventListener('input', checkInputValues);
   resizeY.addEventListener('input', checkInputValues);
@@ -166,6 +165,36 @@
     uploadMessage.classList.add('invisible');
   };
 
+  uploadForm.addEventListener('change', changeUploadForm);
+  resizeForm.addEventListener('reset', resetResizeForm);
+  resizeForm.addEventListener('submit', submitResizeForm);
+  filterForm.addEventListener('reset', resetFilterForm);
+  filterForm.addEventListener('submit', submitFilterForm);
+  filterForm.addEventListener('change', changeFilterForm);
+
+  /**
+   * Двусторонняя связь между формой кадрирования и объектом Resizer.
+   * Синхронизировались их значений между собой.
+   */
+  window.addEventListener('resizerchange', getCurrentResizerData);
+  uploadResizeControls.addEventListener('input', setNewResizerData);
+
+  function getCurrentResizerData() {
+    var constraints = currentResizer.getConstraint();
+
+    resizeX.value = Math.round(constraints.x);
+    resizeY.value = Math.round(constraints.y);
+    resizeSize.value = Math.round(constraints.side);
+  }
+
+  function setNewResizerData() {
+    var left = parseInt(resizeX.value, 10);
+    var top = parseInt(resizeY.value, 10);
+    var size = parseInt(resizeSize.value, 10);
+
+    currentResizer.setConstraint(left, top, size);
+  }
+
   /**
    * Обработчик изменения изображения в форме загрузки. Если загруженный
    * файл является изображением, считывается исходник картинки, создается
@@ -173,7 +202,7 @@
    * и показывается форма кадрирования.
    * @param {Event} evt
    */
-  uploadForm.onchange = function(evt) {
+  function changeUploadForm(evt) {
     var element = evt.target;
     if (element.id === 'upload-file') {
       // Проверка типа загружаемого файла, тип должен быть изображением
@@ -183,7 +212,7 @@
 
         showMessage(Action.UPLOADING);
 
-        fileReader.onload = function() {
+        fileReader.addEventListener('load', function() {
           cleanupResizer();
 
           currentResizer = new Resizer(fileReader.result);
@@ -194,7 +223,7 @@
           resizeForm.classList.remove('invisible');
 
           hideMessage();
-        };
+        });
 
         fileReader.readAsDataURL(element.files[0]);
       } else {
@@ -202,14 +231,14 @@
         showMessage(Action.ERROR);
       }
     }
-  };
+  }
 
   /**
    * Обработка сброса формы кадрирования. Возвращает в начальное состояние
    * и обновляет фон.
    * @param {Event} evt
    */
-  resizeForm.onreset = function(evt) {
+  function resetResizeForm(evt) {
     evt.preventDefault();
 
     cleanupResizer();
@@ -217,14 +246,14 @@
 
     resizeForm.classList.add('invisible');
     uploadForm.classList.remove('invisible');
-  };
+  }
 
   /**
    * Обработка отправки формы кадрирования. Если форма валидна, экспортирует
    * кропнутое изображение в форму добавления фильтра и показывает ее.
    * @param {Event} evt
    */
-  resizeForm.onsubmit = function(evt) {
+  function submitResizeForm(evt) {
     evt.preventDefault();
 
     if (resizeFormIsValid()) {
@@ -242,11 +271,7 @@
       applyStoredFilter();
       filterForm.classList.remove('invisible');
     }
-  };
-
-  filterForm.addEventListener('reset', resetFilterForm);
-  filterForm.addEventListener('submit', submitFilterForm);
-  filterForm.addEventListener('change', changeFilterForm);
+  }
 
   /**
    * Сброс формы фильтра. Показывает форму кадрирования.
