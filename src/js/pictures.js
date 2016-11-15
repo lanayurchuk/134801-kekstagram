@@ -13,7 +13,7 @@ var footer = document.querySelector('footer');
 var picturesLoadUrl = '/api/pictures';
 
 var storedFilter = localStorage.getItem('filterPictures');
-var activeFilter = storedFilter ? storedFilter : 'filter-popular';
+var activeFilter = storedFilter || 'filter-popular';
 var currentPage = 0;
 var pageSize = 12;
 var throttleTimeout = 100;
