@@ -4,123 +4,139 @@ var load = require('./load');
 var Gallery = require('./gallery');
 var Picture = require('./picture');
 
-var gallery = new Gallery();
+function Pictures() {
+  this.gallery = new Gallery();
 
-var filters = document.querySelector('.filters');
-var container = document.querySelector('.pictures');
-var footer = document.querySelector('footer');
+  this.filters = document.querySelector('.filters');
+  this.container = document.querySelector('.pictures');
+  this.footer = document.querySelector('footer');
 
-var picturesLoadUrl = '/api/pictures';
+  this.picturesLoadUrl = '/api/pictures';
 
-var storedFilter = localStorage.getItem('filterPictures');
-var activeFilter = storedFilter || 'filter-popular';
-var currentPage = 0;
-var pageSize = 12;
-var throttleTimeout = 100;
-var GAP = 100;
-var lastCall = Date.now();
-// комбинированный массив со всеми подгружаемыми данными
-var newData = [];
-var renderedPictures = [];
-var pictureIndex = 0;
+  var storedFilter = localStorage.getItem('filterPictures');
+  this.activeFilter = storedFilter || 'filter-popular';
+  this.currentPage = 0;
+  this.pageSize = 12;
+  this.GAP = 100;
+  // комбинированный массив со всеми подгружаемыми данными
+  this.newData = [];
+  this.renderedPictures = [];
+  this.pictureIndex = 0;
+  this.params = {
+    from: this.currentPage * this.pageSize,
+    to: this.currentPage * this.pageSize + this.pageSize,
+    filter: this.activeFilter
+  };
 
-var params = {
-  from: currentPage * pageSize,
-  to: currentPage * pageSize + pageSize,
-  filter: activeFilter
+  var throttleTimeout = 100;
+  var lastCall = Date.now();
+  var self = this;
+
+  this.filters.querySelector('#' + this.activeFilter).checked = true;
+
+  this.renderPictures = this.renderPictures.bind(this);
+  this.loadPictures = this.loadPictures.bind(this);
+  this.changeFilter = this.changeFilter.bind(this);
+  this.removeRenderedPictures = this.removeRenderedPictures.bind(this);
+  this.isFooterBottom = this.isFooterBottom.bind(this);
+  this.showNextPage = this.showNextPage.bind(this);
+  this.autoCompletePage = this.autoCompletePage.bind(this);
+
+  this.hide(this.filters);
+  load(this.picturesLoadUrl, this.params, this.loadPictures);
+
+  window.addEventListener('scroll', function() {
+    if(Date.now() - lastCall >= throttleTimeout) {
+      if (self.isFooterBottom) {
+        self.showNextPage();
+      }
+      lastCall = Date.now();
+    }
+  });
+
+  this.filters.addEventListener('click', function(evt) {
+    if(evt.target.classList.contains('filters-radio')) {
+      self.changeFilter(evt.target.id);
+    }
+  });
+}
+
+Pictures.prototype.loadPictures = function(data) {
+  this.newData = this.newData.concat(data);
+  this.renderPictures(data);
+  this.gallery.setPictures(this.newData);
+  this.show(this.filters);
+  this.autoCompletePage();
 };
 
-filters.querySelector('#' + activeFilter).checked = true;
-
-hide(filters);
-load(picturesLoadUrl, params, loadPictures);
-
-function show(element) {
-  element.classList.remove('hidden');
-}
-
-function hide(element) {
-  element.classList.add('hidden');
-}
-
-function renderPictures(pictures) {
-  var lastIndex = pageSize * currentPage;
+Pictures.prototype.renderPictures = function(pictures) {
+  var self = this;
+  var lastIndex = this.pageSize * this.currentPage;
   pictures.forEach(function(picture, index) {
-    pictureIndex = index + lastIndex;
-    var newElement = new Picture(picture, pictureIndex, gallery);
-    container.appendChild(newElement.element);
-    renderedPictures = renderedPictures.concat(newElement);
+    self.pictureIndex = index + lastIndex;
+    var newElement = new Picture(picture, self.pictureIndex, self.gallery);
+    self.container.appendChild(newElement.element);
+    self.renderedPictures = self.renderedPictures.concat(newElement);
   });
-}
+};
 
-function loadPictures(data) {
-  newData = newData.concat(data);
-  renderPictures(data);
-  gallery.setPictures(newData);
-  show(filters);
-  autoCompletePage();
-}
-
-window.addEventListener('scroll', function() {
-  if(Date.now() - lastCall >= throttleTimeout) {
-    if (isFooterBottom) {
-      showNextPage();
-    }
-    lastCall = Date.now();
-  }
-});
-
-filters.addEventListener('click', function(evt) {
-  if(evt.target.classList.contains('filters-radio')) {
-    changeFilter(evt.target.id);
-  }
-});
-
-function changeFilter(filterName) {
-  removeRenderedPictures();
-
-  newData = [];
-  currentPage = 0;
-  activeFilter = filterName;
-  params = {
-    from: currentPage,
-    to: pageSize,
-    filter: activeFilter
+Pictures.prototype.showNextPage = function() {
+  this.currentPage++;
+  this.params = {
+    from: this.currentPage * this.pageSize,
+    to: this.currentPage * this.pageSize + this.pageSize,
+    filter: this.activeFilter
   };
 
-  localStorage.setItem('filterPictures', params.filter);
-  load(picturesLoadUrl, params, loadPictures);
-}
+  load(this.picturesLoadUrl, this.params, this.loadPictures);
+};
 
-function removeRenderedPictures() {
-  renderedPictures.forEach(function(picture) {
+Pictures.prototype.removeRenderedPictures = function() {
+  var self = this;
+  this.renderedPictures.forEach(function(picture) {
     picture.removeEvent();
-    container.removeChild(picture.element);
+    self.container.removeChild(picture.element);
   });
-  renderedPictures = [];
-}
+  this.renderedPictures = [];
+};
 
-function isFooterBottom() {
-  var footerRect = footer.getBoundingClientRect();
-  var endPage = footerRect.bottom - window.innerHeight;
-  return endPage <= GAP;
-}
+Pictures.prototype.changeFilter = function(filterName) {
+  this.removeRenderedPictures();
 
-function showNextPage() {
-  currentPage++;
-  params = {
-    from: currentPage * pageSize,
-    to: currentPage * pageSize + pageSize,
-    filter: activeFilter
+  this.newData = [];
+  this.currentPage = 0;
+  this.activeFilter = filterName;
+  this.params = {
+    from: this.currentPage,
+    to: this.pageSize,
+    filter: this.activeFilter
   };
 
-  load(picturesLoadUrl, params, loadPictures);
-}
+  localStorage.setItem('filterPictures', this.params.filter);
+  load(this.picturesLoadUrl, this.params, this.loadPictures);
+};
 
-function autoCompletePage() {
+Pictures.prototype.isFooterBottom = function() {
+  var footerRect = this.footer.getBoundingClientRect();
+  var endPage = footerRect.bottom - window.innerHeight;
+  return endPage <= this.GAP;
+};
+
+Pictures.prototype.autoCompletePage = function() {
   var clientHeight = document.body.clientHeight;
   var scrollHeight = document.body.scrollHeight;
   if (clientHeight < scrollHeight) {
-    showNextPage();
+    this.showNextPage();
   }
-}
+};
+
+Pictures.prototype.show = function(element) {
+  element.classList.remove('hidden');
+};
+
+Pictures.prototype.hide = function(element) {
+  element.classList.add('hidden');
+};
+
+var pictures = new Pictures();
+pictures();
