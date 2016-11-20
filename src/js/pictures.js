@@ -12,9 +12,7 @@ function Pictures() {
   this.footer = document.querySelector('footer');
 
   this.picturesLoadUrl = '/api/pictures';
-
-  var storedFilter = localStorage.getItem('filterPictures');
-  this.activeFilter = storedFilter || 'filter-popular';
+  this.activeFilter = localStorage.getItem('filterPictures') || 'filter-popular';
   this.currentPage = 0;
   this.pageSize = 12;
   this.GAP = 100;
@@ -28,37 +26,12 @@ function Pictures() {
     filter: this.activeFilter
   };
 
-  var throttleTimeout = 100;
-  var lastCall = Date.now();
-  var self = this;
-
   this.filters.querySelector('#' + this.activeFilter).checked = true;
 
-  this.renderPictures = this.renderPictures.bind(this);
-  this.loadPictures = this.loadPictures.bind(this);
-  this.changeFilter = this.changeFilter.bind(this);
-  this.removeRenderedPictures = this.removeRenderedPictures.bind(this);
-  this.isFooterBottom = this.isFooterBottom.bind(this);
-  this.showNextPage = this.showNextPage.bind(this);
-  this.autoCompletePage = this.autoCompletePage.bind(this);
-
   this.hide(this.filters);
+  this.loadPictures = this.loadPictures.bind(this);
   load(this.picturesLoadUrl, this.params, this.loadPictures);
-
-  window.addEventListener('scroll', function() {
-    if(Date.now() - lastCall >= throttleTimeout) {
-      if (self.isFooterBottom) {
-        self.showNextPage();
-      }
-      lastCall = Date.now();
-    }
-  });
-
-  this.filters.addEventListener('click', function(evt) {
-    if(evt.target.classList.contains('filters-radio')) {
-      self.changeFilter(evt.target.id);
-    }
-  });
+  this.attachHandlers();
 }
 
 Pictures.prototype.loadPictures = function(data) {
@@ -70,14 +43,13 @@ Pictures.prototype.loadPictures = function(data) {
 };
 
 Pictures.prototype.renderPictures = function(pictures) {
-  var self = this;
   var lastIndex = this.pageSize * this.currentPage;
   pictures.forEach(function(picture, index) {
-    self.pictureIndex = index + lastIndex;
-    var newElement = new Picture(picture, self.pictureIndex, self.gallery);
-    self.container.appendChild(newElement.element);
-    self.renderedPictures = self.renderedPictures.concat(newElement);
-  });
+    this.pictureIndex = index + lastIndex;
+    var newElement = new Picture(picture, this.pictureIndex, this.gallery);
+    this.container.appendChild(newElement.element);
+    this.renderedPictures = this.renderedPictures.concat(newElement);
+  }, this);
 };
 
 Pictures.prototype.showNextPage = function() {
@@ -92,11 +64,10 @@ Pictures.prototype.showNextPage = function() {
 };
 
 Pictures.prototype.removeRenderedPictures = function() {
-  var self = this;
   this.renderedPictures.forEach(function(picture) {
     picture.removeEvent();
-    self.container.removeChild(picture.element);
-  });
+    this.container.removeChild(picture.element);
+  }, this);
   this.renderedPictures = [];
 };
 
@@ -130,6 +101,27 @@ Pictures.prototype.autoCompletePage = function() {
   }
 };
 
+Pictures.prototype.attachHandlers = function() {
+  var throttleTimeout = 100;
+  var lastCall = Date.now();
+  var self = this;
+
+  window.addEventListener('scroll', function() {
+    if(Date.now() - lastCall >= throttleTimeout) {
+      if (self.isFooterBottom) {
+        self.showNextPage();
+      }
+      lastCall = Date.now();
+    }
+  });
+
+  this.filters.addEventListener('click', function(event) {
+    if(event.target.classList.contains('filters-radio')) {
+      self.changeFilter(event.target.id);
+    }
+  });
+};
+
 Pictures.prototype.show = function(element) {
   element.classList.remove('hidden');
 };
@@ -138,5 +130,4 @@ Pictures.prototype.hide = function(element) {
   element.classList.add('hidden');
 };
 
-var pictures = new Pictures();
-pictures();
+module.exports = new Pictures();
